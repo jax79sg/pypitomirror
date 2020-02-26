@@ -12,6 +12,8 @@
 import os
 import tqdm
 import shutil
+import paramiko
+from scp import SCPClient
 
 def extractpypi(packagelist=[], sourceIndex='/mnt/DATA/projects/bandersnatch/mirror/web/simple/', sourcePackages='/mnt/DATA/projects/bandersnatch/mirror/web/packages/', dest='/mnt/DATA/temptemp/pypi6', ssh="jax/Dh123/jax79sg.hopto.org/10022"):
     with tqdm.tqdm(total=len(packagelist)) as pbar:
@@ -29,8 +31,14 @@ def processIndexHtmls(package, sourceIndex, dest, ssh):
         password=ssh.split("/")[1]
         host=ssh.split("/")[2]
         port=ssh.split("/")[3]
-        import subprocess
-        subprocess.run(["rsync", "-rP", "-e","ssh -p "+port,indexpath, user+"@"+host+":"+dest+'/simple/'+package])
+#         import subprocess
+#         subprocess.run(["ssh", "-p "+port, user+"@"+host, "mkdir "+dest+'/simple/'+package])
+#         subprocess.run(["rsync", "-rP", "-e","ssh -p "+port,indexpath, user+"@"+host+":"+dest+'/simple/'+package])
+        client = paramiko.SSHClient()
+        client.load_system_host_keys()
+        client.connect(hostname=host, port=port, username=user, password=password)
+        scp = SCPClient(client.get_transport())
+        scp.put(indexpath, recursive=True, remote_path=dest+'/simple/'+package)
         #subprocess.run(["scp", "-P "+port, indexpath, user+"@"+host+":"+dest+'/simple/'+package])
 #         subprocess.run(["scp", "foo.bar", "joe@srvr.net:/path/to/foo.bar"])
     else:
