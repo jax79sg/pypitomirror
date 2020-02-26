@@ -14,8 +14,8 @@ import tqdm
 import shutil
 import paramiko
 from scp import SCPClient
-sshclient=None
-scp=None
+self.sshclient=None
+self.scp=None
 
 def extractpypi(packagelist=[], sourceIndex='/mnt/DATA/projects/bandersnatch/mirror/web/simple/', sourcePackages='/mnt/DATA/projects/bandersnatch/mirror/web/packages/', dest='/mnt/DATA/temptemp/pypi6', ssh="jax/Dh123/jax79sg.hopto.org/10022"):
     if (ssh is not None):
@@ -23,25 +23,25 @@ def extractpypi(packagelist=[], sourceIndex='/mnt/DATA/projects/bandersnatch/mir
         password=ssh.split("/")[1]
         host=ssh.split("/")[2]
         port=ssh.split("/")[3]
-        sshclient = paramiko.SSHClient()
-        sshclient.load_system_host_keys()
-        sshclient.connect(hostname=host, port=port, username=user, password=password)
-        scp = SCPClient(sshclient.get_transport())
+        self.sshclient = paramiko.SSHClient()
+        self.sshclient.load_system_host_keys()
+        self.sshclient.connect(hostname=host, port=port, username=user, password=password)
+        self.scp = SCPClient(self.sshclient.get_transport())
 
     with tqdm.tqdm(total=len(packagelist)) as pbar:
         for package in packagelist:
             listOfPackages=processIndexHtmls(package, sourceIndex, dest, ssh=ssh)
             processPackages(listOfPackages,sourcePackages, dest, ssh=ssh)
             pbar.update()
-    scp.close()
-    sshclient.close()
+    self.scp.close()
+    self.sshclient.close()
 
 def processIndexHtmls(package, sourceIndex, dest, ssh):
     #Copy it to dest
     indexpath=sourceIndex+package
     indexhtml=sourceIndex+package+'/index.html'
     if (ssh is not None):
-        scp.put(indexpath, recursive=True, remote_path=dest+'/simple/'+package)
+        self.scp.put(indexpath, recursive=True, remote_path=dest+'/simple/'+package)
     else:
         try:
             result = shutil.copytree(indexpath, dest+'/simple/'+package)
