@@ -16,31 +16,32 @@ import paramiko
 from scp import SCPClient
 
 def extractpypi(packagelist=[], sourceIndex='/mnt/DATA/projects/bandersnatch/mirror/web/simple/', sourcePackages='/mnt/DATA/projects/bandersnatch/mirror/web/packages/', dest='/mnt/DATA/temptemp/pypi6', ssh="jax/Dh123/jax79sg.hopto.org/10022"):
+    sshclient=None
+    scp=None
+    if (ssh is not None):
+        user=ssh.split("/")[0]
+        password=ssh.split("/")[1]
+        host=ssh.split("/")[2]
+        port=ssh.split("/")[3]
+        sshclient = paramiko.SSHClient()
+        sshclient.load_system_host_keys()
+        sshclient.connect(hostname=host, port=port, username=user, password=password)
+        scp = SCPClient(client.get_transport())
+
     with tqdm.tqdm(total=len(packagelist)) as pbar:
         for package in packagelist:
             listOfPackages=processIndexHtmls(package, sourceIndex, dest, ssh=ssh)
             processPackages(listOfPackages,sourcePackages, dest, ssh=ssh)
             pbar.update()
+    scp.close()
+    sshclient.close()
 
 def processIndexHtmls(package, sourceIndex, dest, ssh):
     #Copy it to dest
     indexpath=sourceIndex+package
     indexhtml=sourceIndex+package+'/index.html'
     if (ssh is not None):
-        user=ssh.split("/")[0]
-        password=ssh.split("/")[1]
-        host=ssh.split("/")[2]
-        port=ssh.split("/")[3]
-#         import subprocess
-#         subprocess.run(["ssh", "-p "+port, user+"@"+host, "mkdir "+dest+'/simple/'+package])
-#         subprocess.run(["rsync", "-rP", "-e","ssh -p "+port,indexpath, user+"@"+host+":"+dest+'/simple/'+package])
-        client = paramiko.SSHClient()
-        client.load_system_host_keys()
-        client.connect(hostname=host, port=port, username=user, password=password)
-        scp = SCPClient(client.get_transport())
         scp.put(indexpath, recursive=True, remote_path=dest+'/simple/'+package)
-        #subprocess.run(["scp", "-P "+port, indexpath, user+"@"+host+":"+dest+'/simple/'+package])
-#         subprocess.run(["scp", "foo.bar", "joe@srvr.net:/path/to/foo.bar"])
     else:
         try:
             result = shutil.copytree(indexpath, dest+'/simple/'+package)
@@ -72,19 +73,11 @@ def processPackages(listOfPackages,sourcePackages, dest, ssh=None):
         currentDir=dest + '/packages'
         
         if (ssh is not None):
-            user=ssh.split("/")[0]
-            password=ssh.split("/")[1]
-            host=ssh.split("/")[2]
-            port=ssh.split("/")[3]
-            import subprocess
-#             subprocess.run(["rsync", "-rP", "-e","ssh -p "+port,indexpath, user+"@"+host+":"+dest+'/simple/'+package])
-#             subprocess.run(["ssh", "-p "+port, user+"@"+host, "mkdir "+currentDir])
-#             for dir in subDir:
-#                 currentDir=currentDir+"/"+dir
-#                 subprocess.run(["rsync", "-rP", "-e","ssh -p "+port,indexpath, user+"@"+host+":"+dest+'/simple/'+package])
-#                 subprocess.run(["ssh", "-p "+port, user+"@"+host, "mkdir "+currentDir])
-            subprocess.run(["rsync", "-rP", "-e","ssh -p "+port, sourcePackages+package, user+"@"+host+":"+dest + '/packages/'+package])
-#               subprocess.run(["scp", "-P "+port, sourcePackages+package, user+"@"+host+":"+dest + '/packages/'+package])
+            sshclient.exec_command("mkdir -p "+currentDir)
+            for dir in subDir:
+                currentDir=currentDir+"/"+dir
+                sshclient.exec_command("mkdir -p "+currentDir)
+            scp.put(sourcePackages+package, dest + '/packages/'+package)
         else:        
             try:
                 os.mkdir(currentDir)
