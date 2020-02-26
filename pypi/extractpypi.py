@@ -30,6 +30,7 @@ def processIndexHtmls(package, sourceIndex, dest, ssh):
         host=ssh.split("/")[2]
         port=ssh.split("/")[3]
         import subprocess
+        
         subprocess.run(["scp", "-P "+port, indexpath, user+"@"+host+":"+dest+'/simple/'+package])
 #         subprocess.run(["scp", "foo.bar", "joe@srvr.net:/path/to/foo.bar"])
     else:
@@ -68,6 +69,10 @@ def processPackages(listOfPackages,sourcePackages, dest, ssh=None):
             host=ssh.split("/")[2]
             port=ssh.split("/")[3]
             import subprocess
+            subprocess.run(["ssh", "-P "+port, user+"@"+host, "mkdir "+currentDir])
+            for dir in subDir:
+                currentDir=currentDir+"/"+dir
+                subprocess.run(["ssh", "-P "+port, user+"@"+host, "mkdir "+currentDir])
             subprocess.run(["scp", "-P "+port, sourcePackages+package, user+"@"+host+":"+dest + '/packages/'+package])
         else:        
             try:
