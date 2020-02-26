@@ -8,12 +8,12 @@
 # How to use
 # Assuming that you only need torch and torchvision, then run the following.
 # extractpypi(['torch','torchvision'],ssh="user/password/123.22.112.2") 
-```
+
 import os
 import tqdm
 import shutil
 
-def extractpypi(packagelist=[], sourceIndex='/mnt/1a216e0c-9bdc-44ac-8f89-bf2cb3efcfd8/repos/pypi6/web/simple/', sourcePackages='/mnt/1a216e0c-9bdc-44ac-8f89-bf2cb3efcfd8/repos/pypi6/web/packages/', dest='/media/user/BIG_WHITE_4/pypi6', ssh=None):
+def extractpypi(packagelist=[], sourceIndex='/mnt/DATA/projects/bandersnatch/mirror/web/simple/', sourcePackages='/mnt/DATA/projects/bandersnatch/mirror/web/packages/', dest='/mnt/DATA/temptemp/pypi6', ssh="jax/Dh123/jax79sg.hopto.org/10022"):
     with tqdm.tqdm(total=len(packagelist)) as pbar:
         for package in packagelist:
             listOfPackages=processIndexHtmls(package, sourceIndex, dest, ssh=ssh)
@@ -27,9 +27,10 @@ def processIndexHtmls(package, sourceIndex, dest, ssh):
     if (ssh is not None):
         user=ssh.split("/")[0]
         password=ssh.split("/")[1]
-        host==ssh.split("/")[2]
+        host=ssh.split("/")[2]
+        port=ssh.split("/")[3]
         import subprocess
-        subprocess.run(["scp", indexpath, user+"@"+host+":"+dest+'/simple/'+package])
+        subprocess.run(["scp", "-P "+port, indexpath, user+"@"+host+":"+dest+'/simple/'+package])
 #         subprocess.run(["scp", "foo.bar", "joe@srvr.net:/path/to/foo.bar"])
     else:
         try:
@@ -64,9 +65,10 @@ def processPackages(listOfPackages,sourcePackages, dest, ssh=None):
         if (ssh is not None):
             user=ssh.split("/")[0]
             password=ssh.split("/")[1]
-            host==ssh.split("/")[2]
+            host=ssh.split("/")[2]
+            port=ssh.split("/")[3]
             import subprocess
-            subprocess.run(["scp", sourcePackages+package, user+"@"+host+":"+dest + '/packages/'+package])
+            subprocess.run(["scp", "-P "+port, sourcePackages+package, user+"@"+host+":"+dest + '/packages/'+package])
         else:        
             try:
                 os.mkdir(currentDir)
@@ -83,4 +85,4 @@ def processPackages(listOfPackages,sourcePackages, dest, ssh=None):
             print("Copy completed in {}".format(result))
     pass
 
-extractpypi(['torch','torchvision'])
+extractpypi(['transformers','tokenizers'])
