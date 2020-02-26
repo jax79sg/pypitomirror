@@ -14,10 +14,10 @@ import tqdm
 import shutil
 import paramiko
 from scp import SCPClient
+sshclient=None
+scp=None
 
 def extractpypi(packagelist=[], sourceIndex='/mnt/DATA/projects/bandersnatch/mirror/web/simple/', sourcePackages='/mnt/DATA/projects/bandersnatch/mirror/web/packages/', dest='/mnt/DATA/temptemp/pypi6', ssh="jax/Dh123/jax79sg.hopto.org/10022"):
-    sshclient=None
-    scp=None
     if (ssh is not None):
         user=ssh.split("/")[0]
         password=ssh.split("/")[1]
