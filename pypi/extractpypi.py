@@ -73,11 +73,11 @@ class pypitomirror(object):
             currentDir=dest + '/packages'
 
             if (ssh is not None):
-                sshclient.exec_command("mkdir -p "+currentDir)
+                self.sshclient.exec_command("mkdir -p "+currentDir)
                 for dir in subDir:
                     currentDir=currentDir+"/"+dir
-                    sshclient.exec_command("mkdir -p "+currentDir)
-                scp.put(sourcePackages+package, dest + '/packages/'+package)
+                    self.sshclient.exec_command("mkdir -p "+currentDir)
+                self.scp.put(sourcePackages+package, dest + '/packages/'+package)
             else:        
                 try:
                     os.mkdir(currentDir)
