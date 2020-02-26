@@ -26,7 +26,7 @@ def extractpypi(packagelist=[], sourceIndex='/mnt/DATA/projects/bandersnatch/mir
         sshclient = paramiko.SSHClient()
         sshclient.load_system_host_keys()
         sshclient.connect(hostname=host, port=port, username=user, password=password)
-        scp = SCPClient(client.get_transport())
+        scp = SCPClient(sshclient.get_transport())
 
     with tqdm.tqdm(total=len(packagelist)) as pbar:
         for package in packagelist:
