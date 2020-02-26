@@ -75,7 +75,7 @@ def processPackages(listOfPackages,sourcePackages, dest, ssh=None):
 #                 currentDir=currentDir+"/"+dir
 #                 subprocess.run(["rsync", "-rP", "-e","ssh -p "+port,indexpath, user+"@"+host+":"+dest+'/simple/'+package])
 #                 subprocess.run(["ssh", "-p "+port, user+"@"+host, "mkdir "+currentDir])
-              subprocess.run(["rsync", "-rP", "-e","ssh -p "+port, sourcePackages+package, user+"@"+host+":"+dest + '/packages/'+package])
+            subprocess.run(["rsync", "-rP", "-e","ssh -p "+port, sourcePackages+package, user+"@"+host+":"+dest + '/packages/'+package])
 #               subprocess.run(["scp", "-P "+port, sourcePackages+package, user+"@"+host+":"+dest + '/packages/'+package])
         else:        
             try:
