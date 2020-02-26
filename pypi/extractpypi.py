@@ -16,8 +16,6 @@ import paramiko
 from scp import SCPClient
 
 class pypitomirrir(object):
-    self.sshclient=None
-    self.scp=None
 
     def extractpypi(self,packagelist=[], sourceIndex='/mnt/DATA/projects/bandersnatch/mirror/web/simple/', sourcePackages='/mnt/DATA/projects/bandersnatch/mirror/web/packages/', dest='/mnt/DATA/temptemp/pypi6', ssh="jax/Dh123/jax79sg.hopto.org/10022"):
         if (ssh is not None):
